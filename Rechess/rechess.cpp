@@ -647,5 +647,3 @@ namespace rechess {
 	}
 
 }
-
-//end namespace rechess
