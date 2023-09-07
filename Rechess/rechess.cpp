@@ -14,6 +14,8 @@ namespace {
 
 	string const LINE = " -----------------------------------------", BAR = " | ";
 
+	//string[position] to int
+	//char int = int - 1
 	int strtoint(char in) {
 		int out;
 
@@ -27,6 +29,7 @@ namespace {
 		return out;
 	}
 
+	//int to char
 	char inttochar(int in) {
 		char out;
 		out = in + 97;
@@ -524,7 +527,7 @@ namespace rechess {
 		return input;
 	}
 
-	bool const Chess::showMoves(Piece* input, int& i) {
+	bool const Chess::showMoves(Piece* input) {
 		Piece tomove = *input;
 
 		if (tomove.sizeofMove() < 2) {
@@ -534,7 +537,7 @@ namespace rechess {
 
 		int size = tomove.sizeofMove();
 		cout << "\nPossible moves: " << size / 2 << endl;
-		for (i = 0; i < size / 2; i++) {
+		for (int i = 0; i < size / 2; i++) {
 			cout << i + 1 << ". " << inttochar(tomove.getMove(i * 2)) << tomove.getMove(i * 2 + 1) + 1;
 
 			cout << "\t\t";
@@ -610,14 +613,14 @@ namespace rechess {
 
 			tomove = board[pointA[0]][pointA[1]];
 			do {
-				if (showMoves(tomove, movelistnumber) == true) {
-					cout << movelistnumber+1 << ". Type # to go back";
+				if (showMoves(tomove) == true) {
+					cout << "\nType 0 to choose another tile.";
 					input = inputPos();
 
 					pointB[0] = strtoint(input[0]);
 					pointB[1] = strtoint(input[1]);
-					if (pointB[0] == movelistnumber) {
-						cout << "\nMovement aborted. Choose another piece:";
+					if (pointB[0] == -1) {
+						cout << "\nPiece movement aborted. Choose another tile:";
 						break;
 					}
 
