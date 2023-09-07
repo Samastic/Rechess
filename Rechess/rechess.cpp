@@ -439,6 +439,7 @@ namespace rechess {
 					}
 
 					if (board[checkX][checkY] != nullptr) {
+
 						checkP = *board[checkX][checkY];
 						if (checkP.getTeam() != unit.getTeam()) {
 							cout << " - hit enemy";
@@ -516,14 +517,14 @@ namespace rechess {
 		addtoAllMoves(teams[0][4]);
 	}
 
-	string const Chess::inputPiece() {
+	string const Chess::inputPos() {
 		string input;
 		cout << "\nPlease enter a rank and file (Ex: a1): ";
 		cin >> input;
 		return input;
 	}
 
-	bool const Chess::showMoves(Piece* input) {
+	bool const Chess::showMoves(Piece* input, int& i) {
 		Piece tomove = *input;
 
 		if (tomove.sizeofMove() < 2) {
@@ -533,7 +534,7 @@ namespace rechess {
 
 		int size = tomove.sizeofMove();
 		cout << "\nPossible moves: " << size / 2 << endl;
-		for (int i = 0; i < size / 2; i++) {
+		for (i = 0; i < size / 2; i++) {
 			cout << i + 1 << ". " << inttochar(tomove.getMove(i * 2)) << tomove.getMove(i * 2 + 1) + 1;
 
 			cout << "\t\t";
@@ -551,7 +552,7 @@ namespace rechess {
 		bool out = false;
 		int size = tomove.sizeofMove();
 		for (int i = 0; i < size; i += 2) {
-			cout << "checking " << i << ", " << i + 1;
+			//cout << "checking " << i << ", " << i + 1;
 			if (tomove.getMove(i) == pointB[0] && tomove.getMove(i + 1) == pointB[1]) {
 				cout << "\n" << sayTeam(tomove.getTeam()) << " " << sayType(tomove.getType()) << " move is valid";
 				board[pointB[0]][pointB[1]] = board[tomove.getXpos()][tomove.getYpos()];
@@ -574,8 +575,8 @@ namespace rechess {
 	void const Chess::takeTurn(int turn) {
 		string input;
 		char char_in[2];
-		int pointA[2], pointB[2];
-		bool valid;
+		int pointA[2], pointB[2], movelistnumber;
+		bool validmove, movepick;
 		Piece* tomove;
 
 		/*if (turn == 0) {
@@ -585,14 +586,14 @@ namespace rechess {
 			cout << "\nBLACK TURN";
 		}*/
 		do {
-			valid = false;
-			input = inputPiece();
+			validmove = false;
+			input = inputPos();
 			pointA[0] = strtoint(input[0]);
 			pointA[1] = strtoint(input[1]);
 
 			cout << "\npointA input: (" << input[0] << ", " << input[1] << ") | board coords: (" << pointA[0] << ", " << pointA[1] << ")";
 
-			if (pointA[0] < 0 || pointA[0] > 7 || pointA[1] < 0 || pointA[1] > 7) {
+			if (!checkBounds(pointA[0],pointA[1])) {
 				cout << "\nError: input out-of-bounds";
 				continue;
 			}
@@ -608,17 +609,29 @@ namespace rechess {
 			}*/
 
 			tomove = board[pointA[0]][pointA[1]];
+			do {
+				if (showMoves(tomove, movelistnumber) == true) {
+					cout << movelistnumber+1 << ". Type # to go back";
+					input = inputPos();
 
-			if (showMoves(tomove) == true) {
-				input = inputPiece();
-				pointB[0] = strtoint(input[0]);
-				pointB[1] = strtoint(input[1]);
+					pointB[0] = strtoint(input[0]);
+					pointB[1] = strtoint(input[1]);
+					if (pointB[0] == movelistnumber) {
+						cout << "\nMovement aborted. Choose another piece:";
+						break;
+					}
 
-				valid = movePiece(tomove, pointB);
+					validmove = movePiece(tomove, pointB);
 
-				cout << "\nAt previous point (" << pointA[0] << ", " << pointA[1] << "): " << board[pointA[0]][pointA[1]];
-			}
-		} while (valid == false);
+					if (validmove == true) {
+						cout << "\nAt previous point (" << pointA[0] << ", " << pointA[1] << "): " << board[pointA[0]][pointA[1]];
+					}
+					else {
+						cout << "\n\nInvalid Move! Try again.";
+					}		
+				}
+			} while (validmove == false);
+		} while (validmove == false);
 	}
 
 	void const Chess::startGame() {

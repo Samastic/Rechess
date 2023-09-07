@@ -118,10 +118,10 @@ namespace rechess {
 		//void const checkPins(int);
 
 		//user input
-		string const inputPiece();
+		string const inputPos();
 
 		//user movement functions
-		bool const showMoves(Piece*);
+		bool const showMoves(Piece*, int&);
 
 		bool const movePiece(Piece*, int B[2]);
 
