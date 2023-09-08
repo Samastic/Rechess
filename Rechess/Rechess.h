@@ -16,8 +16,6 @@ P - pawn
 
 */
 
-using namespace std;
-
 namespace rechess {
 
 
@@ -76,7 +74,7 @@ namespace rechess {
 		int Xpos; //x coord on board
 		int Ypos; //y coord on board
 		int Tpos; //position in teams[2][16]
-		vector<int> moves; //list of all potential moves of a piece, where [0] = x, and [1] = y, and so on
+		std::vector<int> moves; //list of all potential moves of a piece, where [0] = x, and [1] = y, and so on
 	};
 
 	class Chess {
@@ -100,6 +98,8 @@ namespace rechess {
 		//piece getters
 		void const getSlider(Piece&, int);
 
+		void const getSlider(Piece&, int, int);
+
 		void const getHopper(Piece&);
 
 		void const getPawn(Piece&);
@@ -118,10 +118,10 @@ namespace rechess {
 		//void const checkPins(int);
 
 		//user input
-		string const inputPos();
+		std::string const inputPos();
 
 		//user movement functions
-		bool const showMoves(Piece*, int&);
+		bool const showMoves(Piece*);
 
 		bool const movePiece(Piece*, int B[2]);
 
@@ -145,6 +145,7 @@ namespace rechess {
 		//Piece teams[0][16];			
 		//Piece teams[1][16];
 		int allmoves[2][8][8];
+		std::vector<int> checkmoves[2];
 	};
 }
 
