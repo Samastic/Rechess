@@ -46,7 +46,7 @@ namespace rechess {
 		//moves vector manipulation
 			void const clearMoves();
 			void const addMove(int, int);
-			int const sizeofMove();
+			int const sizeofMoves();
 			int const getMove(int);
 			void const eraseMove(int, int);
 
@@ -104,18 +104,13 @@ namespace rechess {
 
 		void const getPawn(Piece&);
 
-		void const getKing(Piece&);
+		void const checkKing(Piece&);
 
 		//AllMove		
 		// functions that sets every possible move to each piece a board for each team
 		void const addtoAllMoves(Piece&);
 
-		void const getAllMoves();
-
-		//turn checks
-		//bool const checkStalemate(int);
-
-		//void const checkPins(int);
+		void const getAllMoves();		
 
 		//user input
 		std::string const inputPos();
@@ -127,6 +122,9 @@ namespace rechess {
 
 		//turn system
 		void const takeTurn(int);
+
+		//variable controll
+		void const clearAllmoves();
 
 
 		//VARIABLES
@@ -146,6 +144,8 @@ namespace rechess {
 		//Piece teams[1][16];
 		int allmoves[2][8][8];
 		std::vector<int> checkmoves[2];
+
+		
 	};
 }
 
