@@ -5,7 +5,7 @@
 #include <vector>
 #include "rechess.h"
 
-// MISC
+// MISC AND CONSTS
 namespace {
 	char const KING = 'K', QUEEN = 'Q', ROOK = 'R', BISHOP = 'B', KNIGHT = 'N', PAWN = 'P';
 	char const LAYOUT[8] = { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK };
