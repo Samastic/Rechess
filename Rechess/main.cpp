@@ -1,11 +1,9 @@
 #include <iostream> 
 #include "rechess.h" 
 
-using namespace std;
-using namespace rechess;
 
 int main() {
-	Chess game;
+	rechess::Chess game;
 
 	game.startGame();
 

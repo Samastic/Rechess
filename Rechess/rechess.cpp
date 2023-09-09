@@ -6,15 +6,18 @@
 #include "rechess.h"
 
 // MISC
-namespace rechess {
+namespace {
 	char const KING = 'K', QUEEN = 'Q', ROOK = 'R', BISHOP = 'B', KNIGHT = 'N', PAWN = 'P';
 	char const LAYOUT[8] = { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK };
 	int const ORTH = 0, DIAG = 1, WHITE = 0, BLACK = 1;
 
 	std::string const LINE = " -----------------------------------------", BAR = " | ";
 
-	//std::string[position] to int
-	//char int = int - 1
+	//intput:
+	// char position in string; string[pos]
+	//output:
+	//	characters a = 0, b = 1, etc
+	//	integers = int - 1
 	int strtoint(char in) {
 		int out;
 
@@ -35,6 +38,7 @@ namespace rechess {
 		return out;
 	}
 
+	//returns team color
 	std::string sayTeam(int team) {
 		if (team == 0) {
 			//L + ratio + didn't ask + you're white
@@ -43,6 +47,7 @@ namespace rechess {
 		return "Black";
 	}
 
+	//returns piece type
 	std::string sayType(char type) {
 		switch (type) {
 		case KING:
@@ -60,6 +65,11 @@ namespace rechess {
 		}
 	};
 
+	//input:
+	//	type determines is movement is Orthoganol (0) or Diagonal (1)
+	//	dir chooses which direction to set initializers
+	//output:
+	//	modifies referenced (x,y) initializers to cast a ray
 	void setDirection(int& initX, int& initY, int type, int dir) {
 		switch (dir) {
 		case 0: // N and NW
@@ -87,13 +97,45 @@ namespace rechess {
 	}
 }
 
-// TURN
+// TURN & I/O
 namespace rechess {
 	std::string const Chess::inputPos() {
 		std::string input;
-		std::cout << "\nPlease enter a rank and file (Ex: a1): ";
+		std::cout << "\nEnter a rank and file (Ex: a1): ";
 		std::cin >> input;
 		return input;
+	}
+
+	void const Chess::display() {
+		int team;
+		char type, color = 0;
+		Piece temp;
+
+		std::cout << "\n";
+		for (int y = 7; y > -1; y--) {
+			std::cout << LINE << "\n";
+
+			for (int x = 0; x < 8; x++) {
+				std::cout << BAR;
+				if (board[x][y] != nullptr) {
+					temp = *board[x][y];
+					team = temp.getTeam();
+					type = temp.getType();
+					if (team == 0) {
+						color = 'W';
+					}
+					else {
+						color = 'B';
+					}
+					std::cout << color << type;
+				}
+				else {
+					std::cout << "  ";
+				}
+			}
+			std::cout << BAR << " " << y + 1 << "\n";
+		}
+		std::cout << LINE << "\n" << "   a    b    c    d    e    f    g    h\n";
 	}
 
 	bool const Chess::showMoves(Piece* input) {
@@ -122,21 +164,18 @@ namespace rechess {
 	bool const Chess::movePiece(Piece* input, int pointB[2]) {
 		Piece tomove = *input;
 		bool out = false;
-		int size = tomove.sizeofMoves();
+		int size = tomove.sizeofMoves(),
+			team = tomove.getTeam();
 		for (int i = 0; i < size; i += 2) {
 			//std::cout << "checking " << i << ", " << i + 1;
 			if (tomove.getMove(i) == pointB[0] && tomove.getMove(i + 1) == pointB[1]) {
 				std::cout << "\n" << sayTeam(tomove.getTeam()) << " " << sayType(tomove.getType()) << " move is valid";
+
 				board[pointB[0]][pointB[1]] = board[tomove.getXpos()][tomove.getYpos()];
 				board[tomove.getXpos()][tomove.getYpos()] = nullptr;
-				if (tomove.getTeam() == 0) {
-					teams[0][tomove.getTpos()].setXpos(pointB[0]);
-					teams[0][tomove.getTpos()].setYpos(pointB[1]);
-				}
-				else {
-					teams[1][tomove.getTpos()].setXpos(pointB[0]);
-					teams[1][tomove.getTpos()].setYpos(pointB[1]);
-				}
+
+				teams[team][tomove.getTpos()].setXpos(pointB[0]);
+				teams[team][tomove.getTpos()].setYpos(pointB[1]);
 				return true;
 			}
 		}
@@ -159,6 +198,7 @@ namespace rechess {
 		}*/
 		do {
 			validmove = false;
+			std::cout << "\nPick a piece to move. ";
 			input = inputPos();
 			pointA[0] = strtoint(input[0]);
 			pointA[1] = strtoint(input[1]);
@@ -182,13 +222,13 @@ namespace rechess {
 
 			tomove = board[pointA[0]][pointA[1]];
 			while(showMoves(tomove) == true) {
-				std::cout << "\nType 0 to choose another tile.";
+				std::cout << "\nType 0 to choose another piece.";
 				input = inputPos();
 
 				pointB[0] = strtoint(input[0]);
 				pointB[1] = strtoint(input[1]);
 				if (pointB[0] == -1) {
-					std::cout << "\nPiece movement aborted. Choose another tile:";
+					//std::cout << "\nPiece movement aborted.";
 					break;
 				}
 
@@ -399,6 +439,11 @@ namespace rechess {
 		}
 	}
 
+	bool const Chess::inCheck(Piece& unit) {
+
+		return false;
+	}
+
 	/*void const Chess::checkKing(Piece& unit) {
 		int checkX = 0, checkY = 0,
 			initX, initY,
@@ -522,7 +567,7 @@ namespace rechess {
 
 }
 
-// GAME & BOARD
+// VARIABLES & CONSTRUCTER
 namespace rechess {
 	Chess::Chess() {
 		int file1, file2,
@@ -572,38 +617,6 @@ namespace rechess {
 			}
 			//std::cout << "\n";
 		}
-	}
-
-	void const Chess::display() {
-		int team;
-		char type, color = 0;
-		Piece temp;
-
-		std::cout << "\n";
-		for (int y = 7; y > -1; y--) {
-			std::cout << LINE << "\n";
-
-			for (int x = 0; x < 8; x++) {
-				std::cout << BAR;
-				if (board[x][y] != nullptr) {
-					temp = *board[x][y];
-					team = temp.getTeam();
-					type = temp.getType();
-					if (team == 0) {
-						color = 'W';
-					}
-					else {
-						color = 'B';
-					}
-					std::cout << color << type;
-				}
-				else {
-					std::cout << "  ";
-				}
-			}
-			std::cout << BAR << " " << y + 1 << "\n";
-		}
-		std::cout << LINE << "\n" << "   a    b    c    d    e    f    g    h\n";
 	}
 
 	void const Chess::setBoardtemp() {

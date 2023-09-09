@@ -90,21 +90,29 @@ namespace rechess {
 
 	private:
 		//FUNCTIONS
-		//board setters
-		void const setBoardtemp();
-			
-		void const setBoard();
 		
-		//piece getters
+		//getSlider overload for non-limted pieces
 		void const getSlider(Piece&, int);
 
+		//intput:
+		//- casts 4 rays in either:
+		//	1, Orthogonal
+		//	2, Diagonal
+		//output:
+		//- adds all found spaces to Piece movelist
+		//- marks all found spaces in allmoves as 1
 		void const getSlider(Piece&, int, int);
 
+		//get horse movement
 		void const getHopper(Piece&);
 
+		//finds 1 forward move, and 2 diagonal takes
 		void const getPawn(Piece&);
 
+		//removes any of the king's potential moves that are in a sightline
 		void const checkKing(Piece&);
+
+		bool const inCheck(Piece&);
 
 		//AllMove		
 		// functions that sets every possible move to each piece a board for each team
@@ -115,33 +123,30 @@ namespace rechess {
 		//user input
 		std::string const inputPos();
 
-		//user movement functions
+		//Processes user input and send calls to move pieces
+		void const takeTurn(int);
+
+		//Displays moves from chosen piece
 		bool const showMoves(Piece*);
 
+		//- Moves reference to piece on board to chosen state
+		//- Sets previous to nullptr
+		//- Updates Piece x,y information
 		bool const movePiece(Piece*, int B[2]);
-
-		//turn system
-		void const takeTurn(int);
 
 		//variable controll
 		void const clearAllmoves();
 
+		//copies board to boardtemp
+		void const setBoardtemp();
+
+		//copies boardtemp to board
+		void const setBoard();
 
 		//VARIABLES
-		Piece* board[8][8] = { nullptr };
-							/*  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-								{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}
-								};*/
+		Piece* board[8][8] = { nullptr }; //fills board with nullptr
 		Piece* boardtemp[8][8] = { nullptr };
-		Piece teams[2][16];
-		//Piece teams[0][16];			
-		//Piece teams[1][16];
+		Piece teams[2][16]; //0 = white, 1 = black
 		int allmoves[2][8][8];
 		std::vector<int> checkmoves[2];
 
