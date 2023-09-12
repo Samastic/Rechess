@@ -290,7 +290,6 @@ namespace rechess {
 		/*std::cout << "\nPiece: " << unit.getTeam() << unit.getType();
 		std::cout << "\nXpos: " << unit.getXpos();
 		std::cout << "\nYpos: " << unit.getYpos();*/
-
 		for (int i = 0; i < 4; i++) {
 			setDirection(initX, initY, type, i);
 			j = 1;
