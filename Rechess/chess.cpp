@@ -138,17 +138,18 @@ namespace rechess {
 		std::cout << LINE << "\n" << "   a    b    c    d    e    f    g    h\n";
 	}
 
-	bool const Chess::showMoves(Piece& input) {
+	bool const Chess::showMoves(Piece* input) {
+		Piece tomove = *input;
 
-		if (input.sizeofMoves() < 2) {
-			std::cout << "\nThe piece " << input.getTeam() << input.getType() << " has no moves!";
+		if (tomove.sizeofMoves() < 2) {
+			std::cout << "\nThe piece " << tomove.getTeam() << tomove.getType() << " has no moves!";
 			return false;
 		}
 
-		int size = input.sizeofMoves();
+		int size = tomove.sizeofMoves();
 		std::cout << "\nPossible moves: " << size / 2 << "\n";
 		for (int i = 0; i < size / 2; i++) {
-			std::cout << i + 1 << ". " << inttochar(input.getMove(i * 2)) << input.getMove(i * 2 + 1) + 1;
+			std::cout << i + 1 << ". " << inttochar(tomove.getMove(i * 2)) << tomove.getMove(i * 2 + 1) + 1;
 
 			std::cout << "\t\t";
 
@@ -160,20 +161,21 @@ namespace rechess {
 		return true;
 	}
 
-	bool const Chess::movePiece(Piece& input, int pointB[2]) {
+	bool const Chess::movePiece(Piece* input, int pointB[2]) {
+		Piece tomove = *input;
 		bool out = false;
-		int size = input.sizeofMoves(),
-			team = input.getTeam();
+		int size = tomove.sizeofMoves(),
+			team = tomove.getTeam();
 		for (int i = 0; i < size; i += 2) {
 			//std::cout << "checking " << i << ", " << i + 1;
-			if (input.getMove(i) == pointB[0] && input.getMove(i + 1) == pointB[1]) {
-				std::cout << "\n" << sayTeam(input.getTeam()) << " " << sayType(input.getType()) << " move is valid";
+			if (tomove.getMove(i) == pointB[0] && tomove.getMove(i + 1) == pointB[1]) {
+				std::cout << "\n" << sayTeam(tomove.getTeam()) << " " << sayType(tomove.getType()) << " move is valid";
 
-				board[pointB[0]][pointB[1]] = board[input.getXpos()][input.getYpos()];
-				board[input.getXpos()][input.getYpos()] = nullptr;
+				board[pointB[0]][pointB[1]] = board[tomove.getXpos()][tomove.getYpos()];
+				board[tomove.getXpos()][tomove.getYpos()] = nullptr;
 
-				teams[team][input.getTpos()].setXpos(pointB[0]);
-				teams[team][input.getTpos()].setYpos(pointB[1]);
+				teams[team][tomove.getTpos()].setXpos(pointB[0]);
+				teams[team][tomove.getTpos()].setYpos(pointB[1]);
 				return true;
 			}
 		}
@@ -186,7 +188,7 @@ namespace rechess {
 		char char_in[2];
 		int pointA[2], pointB[2], movelistnumber;
 		bool validmove, movepick;
-		Piece tomove;
+		Piece temp, * tomove;
 
 		/*if (turn == 0) {
 			std::cout << "\nWHITE TURN";
@@ -214,13 +216,14 @@ namespace rechess {
 			}
 
 			tomove = board[pointA[0]][pointA[1]];
+			temp = *tomove;
 
-			if (tomove.getTeam() != turn) {
+			if (temp.getTeam() != turn) {
 				std::cout << "\nError: you must pick your own team";
 				continue;
 			}
 
-			while(showMoves(tomove) == true) {
+			while(showMoves(board[pointA[0]][pointA[1]]) == true) {
 				std::cout << "\nType 0 to choose another piece.";
 				input = inputPos();
 
@@ -257,7 +260,7 @@ namespace rechess {
 		
 		do {
 			getAllMoves();
-			if (!inCheck(teams[turncount][4])) {
+			if (inCheck(teams[turncount][4])) {
 				std::cout << "-----------------incheck";
 			}
 			setBoardtemp();
@@ -278,7 +281,7 @@ namespace rechess {
 // MOVEMENT
 namespace rechess {
 	void const Chess::getSlider(Piece& unit, int type) {
-		getSlider(unit, type, 7);
+		getSlider(unit, type, 8);
 	}
 
 	void const Chess::getSlider(Piece& unit, int type, int limit) {
@@ -440,14 +443,65 @@ namespace rechess {
 		}
 	}
 
+	//returns true if in check, also coordinates softchecking
 	bool const Chess::inCheck(Piece& unit) {
-
+		int enemyteam = 1 - unit.getTeam();
+		int checkX = 0, checkY = 0,
+			initX, initY,
+			j;
+		bool go;
+		Piece checkP, * tempP;
+		std::vector<Piece*> teammates;
+		
 		if (unit.getType() == 'K') {
-			std::cout << "\n\ninCheck revieved king, " << unit.getType();
+			std::cout << "\n\ninCheck revieved king, " << unit.getTeam() << unit.getType();
+		}
+		else {
+			std::cout << "\n\ninCheck not king, " << unit.getTeam() << unit.getType();
+
 			return false;
 		}
 
-		std::cout << "\n\ninCheck not king, " << unit.getType();
+		for (int h = 0; h < 2; h++) {
+			for (int i = 0; i < 4; i++) {
+				setDirection(initX, initY, h, i);
+				j = 1;
+				go = true;
+				teammates.clear();
+				do {
+					//std::cout << "\n\t\t\tXpos: " << unit.getXpos() << " + " << (j * initX);
+					//std::cout << "\n\t\t\tYpos: " << unit.getYpos() << " + " << (j * initY);
+					checkX = unit.getXpos() + (j * initX);
+					checkY = unit.getYpos() + (j * initY);
+					//std::cout << "\n\t\tCheck X, Y: (" << checkX << ", " << checkY << ")";
+					if (!checkBounds(checkX, checkY)) {
+						//std::cout << " - Bounds";
+						break;
+					}
+					if (board[checkX][checkY] != nullptr) {
+						std::cout << " - not null";
+						tempP = board[checkX][checkY];
+						checkP = *tempP;
+						if (checkP.getTeam() == unit.getTeam()) {
+							std::cout << " - hit team";
+							teammates.push_back(tempP);
+						}
+						else {
+							if (teammates.size() > 0) {
+								//soft check
+							}
+							else {
+								//check
+								std::cout << " - King in Check!\n";
+								return true;
+							}
+							
+						}
+					}
+					j++;
+				} while (go == true);
+			}
+		}
 
 		return false;
 	}
