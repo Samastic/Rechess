@@ -443,25 +443,33 @@ namespace rechess {
 		}
 	}
 
-	//returns true if in check, also coordinates softchecking
 	bool const Chess::inCheck(Piece& unit) {
+		if (sliderCheck(unit)) {
+			return true;
+		}
+		else if (hopperCheck(unit)) {
+			return true;
+		}
+		return false;
+	}
+
+	//returns true if in check, also coordinates softchecking
+	bool const Chess::sliderCheck(Piece& unit) {
 		int enemyteam = 1 - unit.getTeam();
 		int checkX = 0, checkY = 0,
 			initX, initY,
 			j;
-		bool go;
+		bool go, check = false;
 		Piece checkP, * tempP;
 		std::vector<Piece*> teammates;
-		
-		if (unit.getType() == 'K') {
+		/*if (unit.getType() == 'K') {
 			std::cout << "\n\ninCheck revieved king, " << unit.getTeam() << unit.getType();
 		}
 		else {
 			std::cout << "\n\ninCheck not king, " << unit.getTeam() << unit.getType();
 
 			return false;
-		}
-
+		}*/
 		for (int h = 0; h < 2; h++) {
 			for (int i = 0; i < 4; i++) {
 				setDirection(initX, initY, h, i);
@@ -469,8 +477,10 @@ namespace rechess {
 				go = true;
 				teammates.clear();
 				do {
-					//std::cout << "\n\t\t\tXpos: " << unit.getXpos() << " + " << (j * initX);
-					//std::cout << "\n\t\t\tYpos: " << unit.getYpos() << " + " << (j * initY);
+					/*
+					std::cout << "\n\t\t\tXpos: " << unit.getXpos() << " + " << (j * initX);
+					std::cout << "\n\t\t\tYpos: " << unit.getYpos() << " + " << (j * initY);
+					*/
 					checkX = unit.getXpos() + (j * initX);
 					checkY = unit.getYpos() + (j * initY);
 					//std::cout << "\n\t\tCheck X, Y: (" << checkX << ", " << checkY << ")";
@@ -487,21 +497,23 @@ namespace rechess {
 							teammates.push_back(tempP);
 						}
 						else {
-							if (teammates.size() > 0) {
-								//soft check
-							}
-							else {
+							if (teammates.size() < 1) {
 								//check
 								std::cout << " - King in Check!\n";
+								check = true;
 								return true;
 							}
-							
 						}
 					}
 					j++;
 				} while (go == true);
 			}
 		}
+
+		return check;
+	}
+
+	bool const Chess::hopperCheck(Piece& unit) {
 
 		return false;
 	}

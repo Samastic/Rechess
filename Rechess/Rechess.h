@@ -113,6 +113,10 @@ namespace rechess {
 		void const checkKing(Piece&);
 
 		bool const inCheck(Piece&);
+		
+		bool const sliderCheck(Piece&);
+
+		bool const hopperCheck(Piece&);
 
 		//AllMove		
 		// functions that sets every possible move to each piece a board for each team
