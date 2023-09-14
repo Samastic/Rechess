@@ -327,6 +327,60 @@ namespace rechess {
 	}
 
 	void const Chess::getHopper(Piece& unit) {
+		int over = 1, up = 2,
+			checkX = 0, checkY = 0,
+			initX = 0, initY = 0,
+			temp;
+		bool go = false;
+		Piece checkP;
+		for (int i = 0; i < 2; i++) {
+			if (i && 1) {
+				temp = up;
+				up = over;
+				over = temp;
+			}
+			for (int j = 0; j < 4; j++) {
+				if (j < 2) {
+					initX = over;
+				}
+				else {
+					initX = over * -1;
+				}
+				
+				if (j % 2 == 0) {
+					initY = up;
+				}
+				else {
+					initY = up * -1;
+				}
+
+				checkX = unit.getXpos() + initX;
+				checkY = unit.getYpos() + initY;
+				std::cout << "\n\t\tCheck X, Y (" << checkX << "," << checkY << ") ; (" << initX << "," << initY << ")";
+
+				if (checkX < 8 && checkX >= 0 && checkY < 8 && checkY >= 0) {
+					if (board[checkX][checkY] != nullptr) {
+						checkP = *board[checkX][checkY];
+						if (checkP.getTeam() == unit.getTeam()) {
+							std::cout << " - hit team";
+							continue;
+						}
+						std::cout << " - hit enemy";
+					}
+
+					allmoves[unit.getTeam()][checkX][checkY] = 1;
+					unit.addMove(checkX, checkY);
+					std::cout << "\n\t\t  Adding to " << unit.getTeam() << unit.getType() << " move (" << checkX << "," << checkY << ")";
+				}
+				else {
+					std::cout << " - out of bounds";
+				}
+				
+			}
+		}
+	}
+	
+	/*void const Chess::getHopper(Piece& unit) {
 		int checkX = 0, checkY = 0,
 			initX = 0, initY = 0;
 		bool go = false;
@@ -383,7 +437,7 @@ namespace rechess {
 			}
 		}
 
-	}
+	}*/
 
 	void const Chess::getPawn(Piece& unit) {
 		int checkX, checkY,
