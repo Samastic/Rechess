@@ -305,6 +305,7 @@ namespace rechess {
 		bool go, check = false;
 		Piece checkP, * tempP;
 		std::vector<Piece*> teammates;
+		std::vector<int> tempmoves;
 		/*if (king.getType() == 'K') {
 			std::cout << "\n\ninCheck revieved king, " << king.getTeam() << king.getType();
 		}
@@ -335,6 +336,8 @@ namespace rechess {
 					if (board[checkX][checkY] == nullptr) {
 						j++;
 						continue;
+						tempmoves.push_back(checkX);
+						tempmoves.push_back(checkY);
 					}
 					std::cout << " - not null";
 					tempP = board[checkX][checkY];
@@ -345,6 +348,8 @@ namespace rechess {
 					}
 					else {
 						std::cout << " - hit enemy";
+						tempmoves.push_back(checkX);
+						tempmoves.push_back(checkY);
 						if (findHit(tempP, king)) {
 							std::cout << " - King in Check!\n";
 							check = true;
@@ -355,7 +360,6 @@ namespace rechess {
 				} while(go);
 			}
 		}
-
 		return check;
 	}
 
@@ -669,7 +673,7 @@ namespace rechess {
 
 // VARIABLES & CONSTRUCTER
 namespace rechess {
-	Chess::Chess() {
+	/*Chess::Chess() {
 		int file1, file2,
 			k;
 		Piece* pawnlocation, * unitlocation;
@@ -717,7 +721,31 @@ namespace rechess {
 			}
 			//std::cout << "\n";
 		}
+	}*/
+
+	Chess::Chess() {
+		int unitstart, pawnstart;
+		Piece* pawnlocation, * unitlocation;
+
+		for (int i = 0; i < 2; i++) {
+			unitstart = i * 7;  // unitstart is 0 for white (i=0) and 7 for black (i=1)
+			pawnstart = 1 + (i * 5);  // pawnstart is 1 for white (i=0) and 6 for black (i=1)
+
+			for (int j = 0; j < 8; j++) {
+				Piece man(i, LAYOUT[j], abs(unitstart - j), unitstart, j);
+				Piece pawn(i, PAWN, abs(unitstart - j), pawnstart, j + 8);
+
+				teams[i][j] = man;                                   
+				teams[i][j + 8] = pawn;                              
+				unitlocation = &teams[i][j];                         
+				pawnlocation = &teams[i][j + 8];
+
+				board[abs(unitstart - j)][unitstart] = unitlocation;
+				board[abs(unitstart - j)][pawnstart] = pawnlocation;
+			}
+		}
 	}
+
 
 	void const Chess::setBoardtemp() {
 		for (int x = 0; x < 8; x++) {
