@@ -112,6 +112,8 @@ namespace rechess {
 		//removes any of the king's potential moves that are in a sightline
 		void const checkKing(Piece&);
 
+		bool const findHit(Piece*, Piece&);
+
 		bool const inCheck(Piece&);
 		
 		bool const sliderCheck(Piece&);
