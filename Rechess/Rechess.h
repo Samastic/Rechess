@@ -61,9 +61,9 @@ namespace rechess {
 				status = unit.status;
 			}
 
-			const Piece* operator=(const Piece* pointer) {
+			/*const Piece* operator=(const Piece* pointer) {
 				return pointer;
-			}
+			}*/
 
 
 
@@ -112,19 +112,21 @@ namespace rechess {
 		//removes any of the king's potential moves that are in a sightline
 		void const checkKing(Piece&);
 
-		bool const findHit(Piece*, Piece&);
+		bool const findHit(Piece&, Piece&);
 
-		bool const inCheck(Piece&);
+		bool const hardCheck(Piece&);
 		
+		bool const softCheck(Piece&);
+
 		bool const sliderCheck(Piece&);
 
 		bool const hopperCheck(Piece&);
 
 		//AllMove		
 		// functions that sets every possible move to each piece a board for each team
-		void const addtoAllMoves(Piece&);
+		void const getPieceMoves(Piece&);
 
-		void const getAllMoves();		
+		void const getEveryMove();		
 
 		//user input
 		std::string const inputPos();
@@ -152,9 +154,12 @@ namespace rechess {
 		//VARIABLES
 		Piece* board[8][8] = { nullptr }; //fills board with nullptr
 		Piece* boardtemp[8][8] = { nullptr };
+
 		Piece teams[2][16]; //0 = white, 1 = black
 		int allmoves[2][8][8];
-		std::vector<int> checkmoves[2];
+		std::vector<int> checkmoves[2], softcheckmoves[2];
+
+		
 
 		
 	};
