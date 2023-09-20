@@ -166,7 +166,7 @@ namespace rechess {
 					go = false;
 				}
 				//std::cout << " - Adding";
-				allmoves[unit.getTeam()][checkX][checkY] = 1;
+				sightlines[unit.getTeam()][checkX][checkY] = 1;
 				unit.addMove(checkX, checkY);
 				j++;
 			} while (go == true && j <= limit);
@@ -198,7 +198,7 @@ namespace rechess {
 					}
 					//std::cout << " - hit enemy";
 				}
-				allmoves[unit.getTeam()][checkX][checkY] = 1;
+				sightlines[unit.getTeam()][checkX][checkY] = 1;
 				unit.addMove(checkX, checkY);
 				//std::cout << "\n\t\t  Adding to " << unit.getTeam() << unit.getType() << " move (" << checkX << "," << checkY << ")";
 
@@ -223,7 +223,7 @@ namespace rechess {
 
 		if (board[initX][initY + dir] == nullptr) {
 			//std::cout << "\t\n Forward (" << initX << ", " << initY + dir << ")";
-			allmoves[unit.getTeam()][initX][initY + dir] = 1;
+			sightlines[unit.getTeam()][initX][initY + dir] = 1;
 			unit.addMove(initX, initY + dir);
 
 			if (board[initX][initY + (dir * 2)] == nullptr && initY == (7 * unit.getTeam()) + dir) {
@@ -240,7 +240,7 @@ namespace rechess {
 					checkP = *board[checkX][checkY];
 					if (checkP.getTeam() != unit.getTeam()) {
 						//std::cout << " - hit enemy";
-						allmoves[unit.getTeam()][checkX][checkY] = 1;
+						sightlines[unit.getTeam()][checkX][checkY] = 1;
 						unit.addMove(checkX, checkY);
 					}
 				}
@@ -257,7 +257,7 @@ namespace rechess {
 				<< ",\t moves size = " << (totalmoves+1)/2
 				<< ",\t moves pos: " << i - 1 << ", " << i
 				<< ",\t board pos: " << unit.getMove(i-1) << ", " << unit.getMove(i);*/
-			if (allmoves[enemyteam][unit.getMove(i - 1)][unit.getMove(i)] == 1) {
+			if (sightlines[enemyteam][unit.getMove(i - 1)][unit.getMove(i)] == 1) {
 				//std::cout << " ---------erased << "," << i - 1 << ", " << i;"					
 				unit.eraseMove(i - 1, i);
 			}
@@ -303,10 +303,7 @@ namespace rechess {
 			}
 		}
 		std::cout << "\n\nHits = " << hits << "\n\n";
-		if (hits > 1) {
-			return true;
-		}
-		else if (hits < 1) {
+		if (hits < 1) {
 			return false;
 		}
 
@@ -419,19 +416,19 @@ namespace rechess {
 
 				checkX = unit.getXpos() + initX;
 				checkY = unit.getYpos() + initY;
-				std::cout << "\n\t\tCheck Allmoves " << sayTeam(checkteam) << " team: " << allmoves[checkteam][checkX][checkY];
+				std::cout << "\n\t\tCheck Sightlines " << sayTeam(checkteam) << " team: " << sightlines[checkteam][checkX][checkY];
 				std::cout << "\n\t\tCheck X, Y (" << checkX << "," << checkY << ")";
 
 
 
 				if (checkBounds(checkX, checkY)) {
-					if (allmoves[checkteam][checkX][checkY] == 1) {
+					if (sightlines[checkteam][checkX][checkY] == 1) {
 						std::cout << " - enemy sight line";
 						continue;
 					}
-					else if (allmoves[checkteam][checkX][checkY] == 2) {
+					else if (sightlines[checkteam][checkX][checkY] == 2) {
 						std::cout << " - king sight line";
-						allmoves[unit.getTeam()][checkX][checkY] = 2;
+						sightlines[unit.getTeam()][checkX][checkY] = 2;
 
 						for (int k = 0; k < unit.sizeofMoves(); k += 2) {
 							std::cout << "\n\t\t\t\t" << i << ", " << i + 1;
@@ -456,9 +453,9 @@ namespace rechess {
 					}
 
 
-					if (allmoves[checkteam][checkX][checkY] != 1) {
-						allmoves[unit.getTeam()][checkX][checkY] = 2;
-						std::cout << "\n\t\t\t allmoves";
+					if (sightlines[checkteam][checkX][checkY] != 1) {
+						sightlines[unit.getTeam()][checkX][checkY] = 2;
+						std::cout << "\n\t\t\t sightlines";
 					}
 
 					unit.addMove(checkX, checkY);
@@ -505,8 +502,8 @@ namespace rechess {
 		
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				allmoves[0][i][j] = 0;
-				allmoves[1][i][j] = 0;
+				sightlines[0][i][j] = 0;
+				sightlines[1][i][j] = 0;
 			}
 		}
 
@@ -703,10 +700,10 @@ namespace rechess {
 
 			if (hardCheck(teams[turn][4])){
 				winstate = true;
-				std::cout << "\n\n\n\nGameover! " << sayTeam(1 - turn) << " wins!";
+				std::cout << "\n\n\n\nGame Over! " << sayTeam(turn) << " is checkmate, " << sayTeam(1 - turn) << " wins! Conchessulations!";
 			}
 
-			clearAllmoves();
+			clearSightlines();
 			
 
 			std::cout << "turn #" << turncount << ", " << sayTeam(turn);
@@ -809,12 +806,12 @@ namespace rechess {
 		}
 	}
 
-	void const Chess::clearAllmoves() {
+	void const Chess::clearSightlines() {
 		for (int t = 0; t < 2; t++) {
 			for (int x = 0; x < 8; x++) {
 				for (int y = 0; y < 8; y++) {
-					//std::cout << "allmoves(" << t << x << y << "): " << allmoves[t][x][y] << "\n";
-					allmoves[t][x][y] = 0;
+					//std::cout << "sightlines(" << t << x << y << "): " << sightlines[t][x][y] << "\n";
+					sightlines[t][x][y] = 0;
 				}
 			}
 		}

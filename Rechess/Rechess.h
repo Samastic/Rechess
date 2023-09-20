@@ -100,7 +100,7 @@ namespace rechess {
 		//	2, Diagonal
 		//output:
 		//- adds all found spaces to Piece movelist
-		//- marks all found spaces in allmoves as 1
+		//- marks all found spaces in sightlines as 1
 		void const getSlider(Piece&, int, int);
 
 		//get horse movement
@@ -143,7 +143,7 @@ namespace rechess {
 		bool const movePiece(Piece*, int B[2]);
 
 		//variable controll
-		void const clearAllmoves();
+		void const clearSightlines();
 
 		//copies board to boardtemp
 		void const setBoardtemp();
@@ -156,7 +156,7 @@ namespace rechess {
 		Piece* boardtemp[8][8] = { nullptr };
 
 		Piece teams[2][16]; //0 = white, 1 = black
-		int allmoves[2][8][8];
+		int sightlines[2][8][8];
 		std::vector<int> checkmoves[2], softcheckmoves[2];
 
 		
