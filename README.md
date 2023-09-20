@@ -1,11 +1,7 @@
 GOALS:
-1. Functioning Chess Engine in C**
+1. Functioning Chess Engine in C++
 (2). Custom Pieces and Piece Swapping
 (3). gold pair of pants
-
-
-
-
 
 TO DO:
 ----------rewrite chess constructor so the teams are flipped (moron)
@@ -22,7 +18,9 @@ TO DO:
 			* if 2 pieces, enemy can't pin
 			* if 1 piece is inbetween the enemy and king, softcheck
 				- send piece to trimMoves()
-	* bool trimMoves(vector<int> heckmoves)
+	* getCheckmoves(enemy, king)
+		- finds all the spaces between enemy and king
+	* trimMoves(vector<int> newmoves)
 		- trims moves from a piece that don't match newmoves
 - checkmate
 	

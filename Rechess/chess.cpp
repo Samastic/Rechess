@@ -293,12 +293,12 @@ namespace rechess {
 	// 0 = not in check
 	bool const Chess::hardCheck(Piece& king) {
 		int hits = 0, enemyteam = 1 - king.getTeam();
-		Piece* enemy;
+		std::vector<Piece*> enemy;
 		for (int i = 0; i < 16; i++) {
 			if (teams[0][i].getType() != 'K') {
 				if (findHit(teams[enemyteam][i], king)) {
 					hits++;
-					enemy = &teams[enemyteam][i];
+					enemy.push_back(&teams[enemyteam][i]);
 				}
 			}
 		}
@@ -308,7 +308,12 @@ namespace rechess {
 		}
 
 		std::cout << "-------------------In check!";
-		//getCheckmoves()
+		for (int i = 0; i < hits; i++) {
+			//getCheckmoves(enemy[i], king);
+		}
+		
+		
+		//if checkmoves == 0 then return true
 
 		return false;
 	}
@@ -565,17 +570,16 @@ namespace rechess {
 	}
 
 	bool const Chess::showMoves(Piece* input) {
-		Piece tomove = *input;
 
-		if (tomove.sizeofMoves() < 2) {
-			std::cout << "\nThe piece " << tomove.getTeam() << tomove.getType() << " has no moves!";
+		if (input->sizeofMoves() < 2) {
+			std::cout << "\nThe piece " << input->getTeam() << input->getType() << " has no moves!";
 			return false;
 		}
 
-		int size = tomove.sizeofMoves();
+		int size = input->sizeofMoves();
 		std::cout << "\nPossible moves: " << size / 2 << "\n";
 		for (int i = 0; i < size / 2; i++) {
-			std::cout << i + 1 << ". " << inttochar(tomove.getMove(i * 2)) << tomove.getMove(i * 2 + 1) + 1;
+			std::cout << i + 1 << ". " << inttochar(input->getMove(i * 2)) << input->getMove(i * 2 + 1) + 1;
 
 			std::cout << "\t\t";
 
@@ -588,20 +592,19 @@ namespace rechess {
 	}
 
 	bool const Chess::movePiece(Piece* input, int pointB[2]) {
-		Piece tomove = *input;
 		bool out = false;
-		int size = tomove.sizeofMoves(),
-			team = tomove.getTeam();
+		int size = input->sizeofMoves(),
+			team = input->getTeam();
 		for (int i = 0; i < size; i += 2) {
 			//std::cout << "checking " << i << ", " << i + 1;
-			if (tomove.getMove(i) == pointB[0] && tomove.getMove(i + 1) == pointB[1]) {
-				std::cout << "\n" << sayTeam(tomove.getTeam()) << " " << sayType(tomove.getType()) << " move is valid";
+			if (input->getMove(i) == pointB[0] && input->getMove(i + 1) == pointB[1]) {
+				std::cout << "\n" << sayTeam(input->getTeam()) << " " << sayType(input->getType()) << " move is valid";
 
-				board[pointB[0]][pointB[1]] = board[tomove.getXpos()][tomove.getYpos()];
-				board[tomove.getXpos()][tomove.getYpos()] = nullptr;
+				board[pointB[0]][pointB[1]] = board[input->getXpos()][input->getYpos()];
+				board[input->getXpos()][input->getYpos()] = nullptr;
 
-				teams[team][tomove.getTpos()].setXpos(pointB[0]);
-				teams[team][tomove.getTpos()].setYpos(pointB[1]);
+				teams[team][input->getTpos()].setXpos(pointB[0]);
+				teams[team][input->getTpos()].setYpos(pointB[1]);
 				return true;
 			}
 		}
