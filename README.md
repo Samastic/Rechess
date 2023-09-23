@@ -1,4 +1,4 @@
-GOALS:
+﻿GOALS:
 1. Functioning Chess Engine in C++
 (2). Custom Pieces and Piece Swapping
 (3). gold pair of pants
@@ -7,7 +7,7 @@ TO DO:
 ----------rewrite chess constructor so the teams are flipped (moron)
 - king everythinng (VERY IN PROGRESS);
 	* hardCheck()
-		- 1. check how many pieces are checking king
+		- 1. 👍check how many pieces are checking king
 		- 2. find all spaces that are inbetween the king and the attacking pieces
 		- 3. put all the spaces from 2. and the spaces the king can move to into an array
 		- 4. if 3. array size = 0, checkmate
