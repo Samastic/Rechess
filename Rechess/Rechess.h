@@ -114,6 +114,8 @@ namespace rechess {
 
 		bool const findHit(Piece&, Piece&);
 
+		bool const getCheckmoves(Piece&, Piece&);
+
 		int const hardCheck(Piece&);
 		
 		bool const softCheck(Piece&);

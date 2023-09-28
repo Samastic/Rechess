@@ -125,6 +125,159 @@ namespace {
 	}
 }
 
+// HARD/SOFT CHECK
+namespace rechess {
+
+	bool const Chess::findHit(Piece& checkP, Piece& king) {
+		int size = checkP.sizeofMoves();
+		std::cout << "\nKing " << king.getTeam();
+		std::cout << "\nPossible moves: " << size / 2 << ", Pos:" << checkP.getXpos() << ", " << checkP.getYpos() << "\n";
+		if (checkP.getTeam() == king.getTeam()) {
+			return false;
+		}
+		for (int i = 0; i < size / 2; i++) {
+			std::cout << i + 1 << ". " << checkP.getMove(i * 2) << checkP.getMove(i * 2 + 1);
+
+			if ((checkP.getMove(i * 2) == king.getXpos()) && (checkP.getMove(i * 2 + 1) == king.getYpos())) {
+				return true;
+			}
+
+			std::cout << "\t\t";
+
+			if (i % 2 == 1) {
+				std::cout << "\n";
+			}
+		}
+		return false;
+	}
+
+	bool const Chess::getCheckmoves(Piece& checkP, Piece& king) {
+		bool ifmoves = true;
+		return ifmoves;
+
+		
+	}
+
+	//returns different integers for different situations
+	// 2 = game over
+	// 1 = in check
+	// 0 = not in check
+	int const Chess::hardCheck(Piece& king) {
+		int hits = 0, enemyteam = 1 - king.getTeam();
+		bool incheck = false;
+		std::vector<Piece*> enemy;
+		for (int i = 0; i < 16; i++) {
+			if (teams[0][i].getType() == 'K') { continue; }
+			if (findHit(teams[enemyteam][i], king)) {
+				hits++;
+				enemy.push_back(&teams[enemyteam][i]);
+			}
+		}
+		std::cout << "\n\nHits = " << hits << "\n\n";
+		if (hits < 1) {
+			return incheck;
+		}
+
+		std::cout << "-------------------In check!";
+		incheck = true;
+		for (int i = 0; i < hits; i++) {
+			//getCheckmoves(enemy[i], king);
+		}
+
+
+		//if checkmoves == 0 then return true
+
+		return incheck;
+	}
+
+	bool const Chess::softCheck(Piece& king) {
+		if (sliderCheck(king) || hopperCheck(king)) {
+			return true;
+		}
+		return false;
+	}
+
+	//returns true if in check, also coordinates softchecking
+	bool const Chess::sliderCheck(Piece& king) {
+		int enemyteam = 1 - king.getTeam();
+		int checkX = 0, checkY = 0,
+			initX, initY,
+			j;
+		bool go, check = false;
+		Piece checkP, * tempP;
+		std::vector<Piece*> teammates;
+		std::vector<int> tempmoves;
+		/*if (king.getType() == 'K') {
+			std::cout << "\n\ninCheck revieved king, " << king.getTeam() << king.getType();
+		}
+		else {
+			std::cout << "\n\ninCheck not king, " << king.getTeam() << king.getType();
+
+			return false;
+		}*/
+		for (int type = 0; type < 2; type++) {
+			for (int i = 0; i < 4; i++) {
+				setSliderDirection(initX, initY, type, i);
+				//std::cout << "\n---raycaster inits: " << initX << ", " << initY;
+				j = 1;
+				go = true;
+				teammates.clear();
+				do {
+					/*std::cout << "\n\tLoop#: " << j << ", go = " << go
+						<< "\n\t\tXpos: " << king.getXpos() << " + " << (j * initX)
+						<< "\n\t\tXpos: " << king.getXpos() << " + " << (j * initX)
+						<< "\n\t\tYpos: " << king.getYpos() << " + " << (j * initY);
+					*/
+					checkX = king.getXpos() + (j * initX);
+					checkY = king.getYpos() + (j * initY);
+					//std::cout << "\n\t\t\tCheck X, Y: (" << checkX << ", " << checkY << ")";
+					if (!checkBounds(checkX, checkY)) {
+						//std::cout << " - Bounds";
+						break;
+					}
+					if (board[checkX][checkY] == nullptr) {
+						j++;
+						tempmoves.push_back(checkX);
+						tempmoves.push_back(checkY);
+						continue;
+					}
+					//std::cout << " - not null";
+					tempP = board[checkX][checkY];
+					checkP = *tempP;
+					if (checkP.getTeam() == king.getTeam()) {
+						//std::cout << " - hit friend";
+						teammates.push_back(tempP);
+						continue;
+					}
+					//std::cout << " - hit enemy";
+					tempmoves.push_back(checkX);
+					tempmoves.push_back(checkY);
+					if (teammates.size() > 1) {
+						//std::cout << " - enemy can't pin";
+					}
+					else {
+						if (type == ORTH && (checkP.getType() == ROOK || checkP.getType() == QUEEN)) {
+							//teammate is in soft check
+						}
+						else if (type == DIAG && (checkP.getType() == BISHOP || checkP.getType() == QUEEN)) {
+							//teammate is in soft check
+
+						}
+					}
+
+					j++;
+				} while (go);
+			}
+		}
+		return check;
+	}
+
+	bool const Chess::hopperCheck(Piece& unit) {
+
+		return false;
+	}
+}
+
 // MOVEMENT
 namespace rechess {
 	void const Chess::getSlider(Piece& unit, int type) {
@@ -263,215 +416,6 @@ namespace rechess {
 			}
 		}
 	}
-
-	bool const Chess::findHit(Piece& checkP, Piece& king) {
-		int size = checkP.sizeofMoves();
-		std::cout << "\nKing " << king.getTeam();
-		std::cout << "\nPossible moves: " << size / 2 << ", Pos:" << checkP.getXpos() << ", " << checkP.getYpos() << "\n";
-		if (checkP.getTeam() == king.getTeam()) {
-			return false;
-		}
-		for (int i = 0; i < size / 2; i++) {
-			std::cout << i + 1 << ". " << checkP.getMove(i * 2) << checkP.getMove(i * 2 + 1);
-
-			if ((checkP.getMove(i * 2) == king.getXpos()) && (checkP.getMove(i * 2 + 1) == king.getYpos())) {
-				return true;
-			}
-
-			std::cout << "\t\t";
-
-			if (i % 2 == 1) {
-				std::cout << "\n";
-			}
-		}
-		return false;
-	}
-	
-	//returns different integers for different situations
-	// 2 = game over
-	// 1 = in check
-	// 0 = not in check
-	int const Chess::hardCheck(Piece& king) {
-		int hits = 0, enemyteam = 1 - king.getTeam();
-		bool incheck = false;
-		std::vector<Piece*> enemy;
-		for (int i = 0; i < 16; i++) {
-			if (teams[0][i].getType() == 'K') { continue; }
-			if (findHit(teams[enemyteam][i], king)) {
-				hits++;
-				enemy.push_back(&teams[enemyteam][i]);
-			}
-		}
-		std::cout << "\n\nHits = " << hits << "\n\n";
-		if (hits < 1) {
-			return incheck;
-		}
-
-		std::cout << "-------------------In check!";
-		incheck = true;
-		for (int i = 0; i < hits; i++) {
-			//getCheckmoves(enemy[i], king);
-		}
-		
-		
-		//if checkmoves == 0 then return true
-
-		return incheck;
-	}
-
-	bool const Chess::softCheck(Piece& king) {
-		if (sliderCheck(king) || hopperCheck(king)) {
-			return true;
-		}
-		return false;
-	}
-
-	//returns true if in check, also coordinates softchecking
-	bool const Chess::sliderCheck(Piece& king) {
-		int enemyteam = 1 - king.getTeam();
-		int checkX = 0, checkY = 0,
-			initX, initY,
-			j;
-		bool go, check = false;
-		Piece checkP, * tempP;
-		std::vector<Piece*> teammates;
-		std::vector<int> tempmoves;
-		/*if (king.getType() == 'K') {
-			std::cout << "\n\ninCheck revieved king, " << king.getTeam() << king.getType();
-		}
-		else {
-			std::cout << "\n\ninCheck not king, " << king.getTeam() << king.getType();
-
-			return false;
-		}*/
-		for (int h = 0; h < 2; h++) {
-			for (int i = 0; i < 4; i++) {
-				setSliderDirection(initX, initY, h, i);
-				//std::cout << "\n---raycaster inits: " << initX << ", " << initY;
-				j = 1;
-				go = true;
-				teammates.clear();
-				do {
-					/*std::cout << "\n\tLoop#: " << j << ", go = " << go
-						<< "\n\t\tXpos: " << king.getXpos() << " + " << (j * initX)
-						<< "\n\t\tYpos: " << king.getYpos() << " + " << (j * initY);
-					*/
-					checkX = king.getXpos() + (j * initX);
-					checkY = king.getYpos() + (j * initY);
-					//std::cout << "\n\t\t\tCheck X, Y: (" << checkX << ", " << checkY << ")";
-					if (!checkBounds(checkX, checkY)) {
-						//std::cout << " - Bounds";
-						break;
-					}
-					if (board[checkX][checkY] == nullptr) {
-						j++;
-						tempmoves.push_back(checkX);
-						tempmoves.push_back(checkY);
-						continue;
-					}
-					//std::cout << " - not null";
-					tempP = board[checkX][checkY];
-					checkP = *tempP;
-					if (checkP.getTeam() == king.getTeam()) {
-						//std::cout << " - hit friend";
-						teammates.push_back(tempP);
-						continue;
-					}
-					//std::cout << " - hit enemy";
-					tempmoves.push_back(checkX);
-					tempmoves.push_back(checkY);
-					if (teammates.size() > 1) {
-						//std::cout << " - enemy can't pin";
-					}					
-					else {							
-						if (i == ORTH && (checkP.getType() == ROOK || checkP.getType() == QUEEN)) {
-							//teammate is in soft check
-						}
-						else if (i == DIAG && (checkP.getType() == BISHOP || checkP.getType() == QUEEN)) {
-							//teammate is in soft check
-
-						}
-					}
-						
-					j++;
-				} while(go);
-			}
-		}
-		return check;
-	}
-
-	bool const Chess::hopperCheck(Piece& unit) {
-
-		return false;
-	}
-
-	/*void const Chess::checkKing(Piece& unit) {
-		int checkX = 0, checkY = 0,
-			initX, initY,
-			checkteam = 1 - unit.getTeam();
-		Piece checkP;
-
-		std::cout << "\nPiece: " << unit.getTeam() << unit.getType();
-		std::cout << "\nXpos: " << unit.getXpos();
-		std::cout << "\nYpos: " << unit.getYpos();
-
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 4; j++) {
-				setSliderDirection(initX, initY, i, j);
-
-				checkX = unit.getXpos() + initX;
-				checkY = unit.getYpos() + initY;
-				std::cout << "\n\t\tCheck Sightlines " << sayTeam(checkteam) << " team: " << sightlines[checkteam][checkX][checkY];
-				std::cout << "\n\t\tCheck X, Y (" << checkX << "," << checkY << ")";
-
-
-
-				if (checkBounds(checkX, checkY)) {
-					if (sightlines[checkteam][checkX][checkY] == 1) {
-						std::cout << " - enemy sight line";
-						continue;
-					}
-					else if (sightlines[checkteam][checkX][checkY] == 2) {
-						std::cout << " - king sight line";
-						sightlines[unit.getTeam()][checkX][checkY] = 2;
-
-						for (int k = 0; k < unit.sizeofMoves(); k += 2) {
-							std::cout << "\n\t\t\t\t" << i << ", " << i + 1;
-							if (unit.getMove(k) == checkX && unit.getMove(k + 1) == checkY) {
-								unit.eraseMove(k, k + 1);
-								break;
-							}
-						}
-						continue;
-					}
-
-					if (board[checkX][checkY] != nullptr) {
-
-						checkP = *board[checkX][checkY];
-						if (checkP.getTeam() != unit.getTeam()) {
-							std::cout << " - hit enemy";
-						}
-						else if (checkP.getTeam() == unit.getTeam()) {
-							std::cout << " - hit team";
-							continue;
-						}
-					}
-
-
-					if (sightlines[checkteam][checkX][checkY] != 1) {
-						sightlines[unit.getTeam()][checkX][checkY] = 2;
-						std::cout << "\n\t\t\t sightlines";
-					}
-
-					unit.addMove(checkX, checkY);
-					std::cout << "\n\t\t  Adding to " << unit.getTeam() << unit.getType() << " move (" << checkX << "," << checkY << ")";
-				}
-				else {
-					std::cout << " - out of bounds";
-				}
-			}
-		}
-	}*/
 
 	void const Chess::getPieceMoves(Piece& unit) {
 		unit.clearMoves();
@@ -726,7 +670,7 @@ namespace rechess {
 
 }
 
-// VARIABLES & CONSTRUCTER
+// VARIABLES MANIPULATORS & CONSTRUCTER
 namespace rechess {
 	/*Chess::Chess() {
 		int file1, file2,
@@ -800,7 +744,6 @@ namespace rechess {
 			}
 		}
 	}
-
 
 	void const Chess::setBoardtemp() {
 		for (int x = 0; x < 8; x++) {
