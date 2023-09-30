@@ -8,10 +8,10 @@ TO DO:
 - king everythinng (VERY IN PROGRESS);
 	* hardCheck()
 		- 1. 👍check how many pieces are checking king
-		- 2. find all spaces that are inbetween the king and the attacking pieces
-		- 3. put all the spaces from 2. and the spaces the king can move to into an array
-		- 4. if 3. array size = 0, checkmate
-		- 5. if 3. array size > 0, trim all non 2. moves from the king's team (not the king)
+		- 2. 👍find all spaces that are inbetween the king and the attacking pieces, getCheckmoves()
+		- 3. 👍put all the spaces from 2. into checkmoves
+		- 4. if checkmoves + king moves = 0, checkmate
+		- 5. if checkmoves > 0, trim all non checkmoves moves from the king's team (ingoring the king)
 	* softCheck()
 		- slider
 			* shoot ray out in orth and diag directions

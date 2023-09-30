@@ -68,6 +68,14 @@ namespace {
 		return "\n\n\n\n\n\n\n\n\n... how?";
 	};
 
+	void sayCheckmoves(std::vector<int> checkmoves) {
+		int size = checkmoves.size() / 2;
+		std::cout << "\n---Checkmoves; size = " << size;
+		for (int i = 0; i < size; i++) {
+			std::cout << "\n" << i << " (" << checkmoves[i * 2] << ", " << checkmoves[(i * 2 + 1)] << ")";
+		}
+	}
+
 	//input:
 	//	type determines is movement is Orthoganol (0) or Diagonal (1)
 	//	dir chooses which direction to set initializers
@@ -119,6 +127,22 @@ namespace {
 		return;
 	}
 
+	int setDirection(int a, int b) {
+		if (b > a) {
+			return 1;
+		}
+		else if (b < a) {
+			return -1;
+		}
+		else if (a == b) {
+			return 0;
+		}
+		else {
+			std::cout << "setDirection Error";
+			return 2;
+		}
+	}
+
 	//returns true if input is in bounds
 	bool checkBounds(int& checkX, int& checkY) {
 		return (checkX < 8 && checkX >= 0 && checkY < 8 && checkY >= 0);
@@ -151,11 +175,41 @@ namespace rechess {
 		return false;
 	}
 
-	bool const Chess::getCheckmoves(Piece& checkP, Piece& king) {
-		bool ifmoves = true;
-		return ifmoves;
+	void const Chess::getCheckmoves(Piece* checkP, Piece& king, std::vector<int>& checkmoves) {
+		int Kxpos = king.getXpos(), Kypos = king.getYpos(),
+			Pxpos = checkP->getXpos(), Pypos = checkP->getYpos(),
+			checkX, checkY,
+			xdir = 0, ydir = 0,
+			xdist = abs(Kxpos - Pxpos), ydist = abs(Kypos - Pypos),
+			checkdist = (xdist >= ydist) ? xdist : ydist;
 
-		
+		if (xdist - ydist == 0) {
+			return;
+		}
+
+		std::cout << "\n\n" << "Kpos (" << Kxpos << ", " << Kypos << "); Ppos (" << Pxpos << ", " << Pypos << ")\n";
+
+		xdir = setDirection(Kxpos, Pxpos);
+		ydir = setDirection(Kypos, Pypos);
+
+		std::cout << "\n" << checkP->getType() << "\n  xdir = " << xdir << "\n  ydir = " << ydir;
+
+		int step = 1;
+		while (step < checkdist) {
+			checkX = Kxpos + (step * xdir);
+			checkY = Kypos + (step * ydir);
+
+			
+
+			if (board[checkX][checkY] != nullptr) {
+				break;
+			}
+
+			std::cout << "\n\t\tcheckmove: (" << checkX << ", " << checkY << ")";
+			checkmoves.push_back(checkX);
+			checkmoves.push_back(checkY);
+			step++;
+		}
 	}
 
 	//returns different integers for different situations
@@ -166,6 +220,7 @@ namespace rechess {
 		int hits = 0, enemyteam = 1 - king.getTeam();
 		bool incheck = false;
 		std::vector<Piece*> enemy;
+		std::vector<int> checkmoves;
 		for (int i = 0; i < 16; i++) {
 			if (teams[0][i].getType() == 'K') { continue; }
 			if (findHit(teams[enemyteam][i], king)) {
@@ -181,8 +236,10 @@ namespace rechess {
 		std::cout << "-------------------In check!";
 		incheck = true;
 		for (int i = 0; i < hits; i++) {
-			//getCheckmoves(enemy[i], king);
+			getCheckmoves(enemy[i], king, checkmoves);
 		}
+
+		sayCheckmoves(checkmoves);
 
 
 		//if checkmoves == 0 then return true

@@ -114,7 +114,9 @@ namespace rechess {
 
 		bool const findHit(Piece&, Piece&);
 
-		bool const getCheckmoves(Piece&, Piece&);
+		//bool const addCheckMoves(Piece&, std::vector<int>);
+
+		void const getCheckmoves(Piece*, Piece&, std::vector<int>&);
 
 		int const hardCheck(Piece&);
 		
