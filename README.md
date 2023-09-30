@@ -12,6 +12,8 @@ TO DO:
 		- 3. 👍put all the spaces from 2. into checkmoves
 		- 4. if checkmoves + king moves = 0, checkmate
 		- 5. if checkmoves > 0, trim all non checkmoves moves from the king's team (ingoring the king)
+		- 6. iterate through game over scenarios
+			1. 2 pieces atacking & king has no moves but there are still 
 	* softCheck()
 		- slider
 			* shoot ray out in orth and diag directions
@@ -20,8 +22,8 @@ TO DO:
 				- send piece to trimMoves()
 	* getCheckmoves(enemy, king)
 		- finds all the spaces between enemy and king
-	* trimMoves(vector<int> newmoves)
-		- trims moves from a piece that don't match newmoves
+	* trimTeamMoves(vector<int> checkmoves)
+		- trims moves from a piece that don't match checkmoves
 - checkmate
 	
 - en passant

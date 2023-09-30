@@ -10,6 +10,7 @@ namespace {
 	char const KING = 'K', QUEEN = 'Q', ROOK = 'R', BISHOP = 'B', KNIGHT = 'N', PAWN = 'P';
 	char const LAYOUT[8] = { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK };
 	int const ORTH = 0, DIAG = 1, WHITE = 0, BLACK = 1;
+	int const GAMEOVER = 2, CHECK = 1;
 
 	std::string const LINE = " -----------------------------------------", BAR = " | ";
 
@@ -68,7 +69,8 @@ namespace {
 		return "\n\n\n\n\n\n\n\n\n... how?";
 	};
 
-	void sayCheckmoves(std::vector<int> checkmoves) {
+	//prints all moves (x,y) = (i*2, i*2+1) in a given vector
+	void sayMoves(std::vector<int> checkmoves) {
 		int size = checkmoves.size() / 2;
 		std::cout << "\n---Checkmoves; size = " << size;
 		for (int i = 0; i < size; i++) {
@@ -154,22 +156,22 @@ namespace rechess {
 
 	bool const Chess::findHit(Piece& checkP, Piece& king) {
 		int size = checkP.sizeofMoves();
-		std::cout << "\nKing " << king.getTeam();
-		std::cout << "\nPossible moves: " << size / 2 << ", Pos:" << checkP.getXpos() << ", " << checkP.getYpos() << "\n";
+		//std::cout << "\nPiece: " << sayType(checkP.getType()) << " " << sayTeam(checkP.getTeam());
+		//std::cout << "\nPossible moves: " << size / 2 << ", Pos:" << checkP.getXpos() << ", " << checkP.getYpos() << "\n";
 		if (checkP.getTeam() == king.getTeam()) {
 			return false;
 		}
 		for (int i = 0; i < size / 2; i++) {
-			std::cout << i + 1 << ". " << checkP.getMove(i * 2) << checkP.getMove(i * 2 + 1);
+			//std::cout << i + 1 << ". " << checkP.getMove(i * 2) << checkP.getMove(i * 2 + 1);
 
 			if ((checkP.getMove(i * 2) == king.getXpos()) && (checkP.getMove(i * 2 + 1) == king.getYpos())) {
 				return true;
 			}
 
-			std::cout << "\t\t";
+			//std::cout << "\t\t";
 
 			if (i % 2 == 1) {
-				std::cout << "\n";
+				//std::cout << "\n";
 			}
 		}
 		return false;
@@ -182,25 +184,24 @@ namespace rechess {
 			xdir = 0, ydir = 0,
 			xdist = abs(Kxpos - Pxpos), ydist = abs(Kypos - Pypos),
 			checkdist = (xdist >= ydist) ? xdist : ydist;
+		std::cout << "\n" << checkP->getType();
+		std::cout << "\n\n" << "Kpos (" << Kxpos << ", " << Kypos << "); Ppos (" << Pxpos << ", " << Pypos << ")\n";
 
-		if (xdist - ydist == 0) {
+		if (xdist == 0 && ydist == 0) {
+			std::cout << "\n no distance";
 			return;
 		}
-
-		std::cout << "\n\n" << "Kpos (" << Kxpos << ", " << Kypos << "); Ppos (" << Pxpos << ", " << Pypos << ")\n";
 
 		xdir = setDirection(Kxpos, Pxpos);
 		ydir = setDirection(Kypos, Pypos);
 
-		std::cout << "\n" << checkP->getType() << "\n  xdir = " << xdir << "\n  ydir = " << ydir;
+		std::cout << "\n  xdir = " << xdir << "\n  ydir = " << ydir;
 
 		int step = 1;
 		while (step < checkdist) {
 			checkX = Kxpos + (step * xdir);
 			checkY = Kypos + (step * ydir);
-
 			
-
 			if (board[checkX][checkY] != nullptr) {
 				break;
 			}
@@ -217,6 +218,7 @@ namespace rechess {
 	// 1 = in check
 	// 0 = not in check
 	int const Chess::hardCheck(Piece& king) {
+
 		int hits = 0, enemyteam = 1 - king.getTeam();
 		bool incheck = false;
 		std::vector<Piece*> enemy;
@@ -226,23 +228,31 @@ namespace rechess {
 			if (findHit(teams[enemyteam][i], king)) {
 				hits++;
 				enemy.push_back(&teams[enemyteam][i]);
+				std::cout << "\nHit! " << teams[enemyteam][i].getType();
 			}
 		}
-		std::cout << "\n\nHits = " << hits << "\n\n";
+		
 		if (hits < 1) {
 			return incheck;
 		}
 
-		std::cout << "-------------------In check!";
+		std::cout << "\n-------------------In check!";
 		incheck = true;
+		std::cout << "\n\nHits = " << hits;
 		for (int i = 0; i < hits; i++) {
-			getCheckmoves(enemy[i], king, checkmoves);
+			if (enemy[i]->getType() != KNIGHT) {
+				getCheckmoves(enemy[i], king, checkmoves);
+			}
+			else {
+				std::cout << "\n Knight hit the king. No checkmoves!";
+			}
 		}
 
-		sayCheckmoves(checkmoves);
+		//sayMoves(checkmoves);
 
-
-		//if checkmoves == 0 then return true
+		if (checkmoves.size() > 0) {
+			//trimTeamMoves();
+		}
 
 		return incheck;
 	}
@@ -597,7 +607,7 @@ namespace rechess {
 		int size = input->sizeofMoves(),
 			team = input->getTeam();
 		for (int i = 0; i < size; i += 2) {
-			//std::cout << "checking " << i << ", " << i + 1;
+			std::cout << "movePiece " << i << ", " << i + 1;
 			if (input->getMove(i) == pointB[0] && input->getMove(i + 1) == pointB[1]) {
 				std::cout << "\n" << sayTeam(input->getTeam()) << " " << sayType(input->getType()) << " move is valid";
 
@@ -679,17 +689,28 @@ namespace rechess {
 	void const Chess::startGame() {
 		int turncount = 0, turn = 0, checkstate;
 		bool winstate = false;
-		int const GAMEOVER = 2, CHECK = 1;
 		
+		std::cout << "\nSTARTING GAME.";
+
+		//moving left w bishop
+		
+
+		//white pawns
 		board[0][1] = nullptr;
 		board[3][1] = nullptr;
 
+		//black pawns
 		board[0][6] = nullptr;
 		board[2][6] = nullptr;
 		board[3][6] = nullptr;
 		board[4][6] = nullptr;
+
 		getEveryMove();
 		std::cout << "\nturn #" << turncount << ", " << sayTeam(turn);
+		
+		//int pointB[2] = { 6, 4 };
+		//movePiece(board[0][2], pointB);
+
 		do {
 			setBoardtemp();
 			
@@ -710,7 +731,9 @@ namespace rechess {
 				break;
 			case CHECK:
 				break;
-
+			case 0:
+				//king is not in check;
+				break;
 			}
 			
 			
