@@ -5,20 +5,23 @@
 
 TO DO:
 - king everythinng (VERY IN PROGRESS);
-	* getCheck()
+	* hardCheck()
 		- 1. 👍check how many pieces are checking king
-		- 2. 👍find all spaces that are inbetween the king and the attacking pieces, getCheckmoves()
+		- 2. 👍find all spaces that are inbetween the king and the attacking pieces, hardCheckmoves()
 		- 2a. 👍if piece is knight, checkmoves = knight position
-		- 3. 👍put all the spaces from 2. into checkmoves
-		- 4. if checkmoves + king moves = 0, checkmate
+		- 3. if hit pieces > 1, only king can move
+		- 4. 👍put all the spaces from 2. into checkmoves
 		- 5. if checkmoves > 0, trim all non checkmoves moves from the king's team (ingoring the king)
+		- 6. game over scenarios
+			1. >=2 attackers, king has no moves
+			2. 1 attacker, checkmoves & king moves = 0
 	* softCheck()
 		- slider
 			* shoot ray out in orth and diag directions
 			* if 2 pieces, enemy can't pin
 			* if 1 piece is inbetween the enemy and king, softcheck
 				- send piece to trimMoves()
-	* getCheckmoves(enemy, king)
+	* hardCheckmoves(enemy, king)
 		- finds all the spaces between enemy and king
 	* trimTeamMoves(vector<int> checkmoves)
 		- trims moves from a piece that don't match checkmoves
@@ -56,3 +59,5 @@ DONE:
 NOTES:
 to get opposite team do 1-n; 1-1 = 0, 1-0 = 1,
 changed teams from teams[0][16], teams[1][16] to teams[2][16]
+
+game over scenarios

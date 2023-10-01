@@ -116,9 +116,9 @@ namespace rechess {
 
 		//bool const addCheckMoves(Piece&, std::vector<int>);
 
-		void const getCheckmoves(Piece*, Piece&, std::vector<int>&);
+		void const hardCheckmoves(Piece*, Piece&, std::vector<int>&);
 
-		int const getCheck(Piece&);
+		int const hardCheck(Piece&);
 		
 		bool const softCheck(Piece&);
 

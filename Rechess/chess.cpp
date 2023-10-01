@@ -177,7 +177,7 @@ namespace rechess {
 		return false;
 	}
 
-	void const Chess::getCheckmoves(Piece* checkP, Piece& king, std::vector<int>& checkmoves) {
+	void const Chess::hardCheckmoves(Piece* checkP, Piece& king, std::vector<int>& checkmoves) {
 		int Kxpos = king.getXpos(), Kypos = king.getYpos(),
 			Pxpos = checkP->getXpos(), Pypos = checkP->getYpos(),
 			checkX, checkY,
@@ -213,7 +213,7 @@ namespace rechess {
 	// 2 = game over
 	// 1 = in check
 	// 0 = not in check
-	int const Chess::getCheck(Piece& king) {
+	int const Chess::hardCheck(Piece& king) {
 
 		int hits = 0, enemyteam = 1 - king.getTeam();
 		bool incheck = false;
@@ -237,7 +237,7 @@ namespace rechess {
 		std::cout << "\n\nHits = " << hits;
 		for (int i = 0; i < hits; i++) {
 			if (enemy[i]->getType() != KNIGHT) {
-				getCheckmoves(enemy[i], king, checkmoves);
+				hardCheckmoves(enemy[i], king, checkmoves);
 			}
 			else {
 				std::cout << "\n Knight hit the king";
@@ -727,7 +727,7 @@ namespace rechess {
 			turncount++;
 			turn = turncount % 2;
 			
-			getCheck(teams[turn][4]);
+			hardCheck(teams[turn][4]);
 
 			/*switch (hardCheck(teams[turn][4])) {
 			case GAMEOVER:
