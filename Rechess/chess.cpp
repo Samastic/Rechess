@@ -227,14 +227,18 @@ namespace rechess {
 				std::cout << "\nHit! " << teams[enemyteam][i].getType();
 			}
 		}
-		
-		if (hits < 1) {
-			return incheck;
-		}
 
 		std::cout << "\n-------------------In check!";
 		incheck = true;
 		std::cout << "\n\nHits = " << hits;
+
+		if (hits < 1) {
+			return incheck;
+		}
+		else if (hits > 2) {
+			//trimTeamMoves() <- means all
+		}
+
 		for (int i = 0; i < hits; i++) {
 			if (enemy[i]->getType() != KNIGHT) {
 				hardCheckmoves(enemy[i], king, checkmoves);
@@ -249,7 +253,7 @@ namespace rechess {
 		//sayMoves(checkmoves);
 
 		if (checkmoves.size() > 0) {
-			//trimTeamMoves();
+			//trimTeamMoves(checkmoves);
 		}
 
 		return incheck;

@@ -23,8 +23,9 @@ TO DO:
 				- send piece to trimMoves()
 	* hardCheckmoves(enemy, king)
 		- finds all the spaces between enemy and king
-	* trimTeamMoves(vector<int> checkmoves)
+	* trimTeamMoves(team, vector<int> checkmoves)
 		- trims moves from a piece that don't match checkmoves
+		- has team only parameter overload which removes all moves, trimTeamMoves(team)
 - checkmate
 	
 - en passant
