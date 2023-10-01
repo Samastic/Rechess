@@ -118,7 +118,7 @@ namespace rechess {
 
 		void const getCheckmoves(Piece*, Piece&, std::vector<int>&);
 
-		int const hardCheck(Piece&);
+		int const getCheck(Piece&);
 		
 		bool const softCheck(Piece&);
 
@@ -141,10 +141,12 @@ namespace rechess {
 		//Displays moves from chosen piece
 		bool const showMoves(Piece*);
 
+		void const movePiece(Piece*, int B[2], int);
+
 		//- Moves reference to piece on board to chosen state
 		//- Sets previous to nullptr
 		//- Updates Piece x,y information
-		bool const movePiece(Piece*, int B[2]);
+		bool const validateMove(Piece*, int B[2]);
 
 		//variable controll
 		void const clearSightlines();
@@ -156,8 +158,8 @@ namespace rechess {
 		void const setBoard();
 
 		//VARIABLES
-		Piece* board[8][8] = { nullptr }; //fills board with nullptr
-		Piece* boardtemp[8][8] = { nullptr };
+		Piece* board[8][8] = {}; //fills board with nullptr
+		Piece* boardtemp[8][8] = {};
 
 		Piece teams[2][16]; //0 = white, 1 = black
 		int sightlines[2][8][8];

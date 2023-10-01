@@ -4,16 +4,14 @@
 (3). gold pair of pants
 
 TO DO:
-----------rewrite chess constructor so the teams are flipped (moron)
 - king everythinng (VERY IN PROGRESS);
-	* hardCheck()
+	* getCheck()
 		- 1. 👍check how many pieces are checking king
 		- 2. 👍find all spaces that are inbetween the king and the attacking pieces, getCheckmoves()
+		- 2a. 👍if piece is knight, checkmoves = knight position
 		- 3. 👍put all the spaces from 2. into checkmoves
 		- 4. if checkmoves + king moves = 0, checkmate
 		- 5. if checkmoves > 0, trim all non checkmoves moves from the king's team (ingoring the king)
-		- 6. iterate through game over scenarios
-			1. 2 pieces atacking & king has no moves but there are still 
 	* softCheck()
 		- slider
 			* shoot ray out in orth and diag directions
@@ -50,7 +48,7 @@ DONE:
 	* show player all possible moves for a piece; showMoves()
 	* get player input; inputPos()
 	* decode player input; strtoint()
-	* validate movement against premoves; movePiece()
+	* validate movement against premoves; validateMove()
 	* update board
 - turn clock
 
