@@ -214,7 +214,6 @@ namespace rechess {
 	// 1 = in check
 	// 0 = not in check
 	int const Chess::hardCheck(Piece& king) {
-
 		int hits = 0, enemyteam = 1 - king.getTeam();
 		bool incheck = false;
 		std::vector<Piece*> enemy;
@@ -236,7 +235,7 @@ namespace rechess {
 			return incheck;
 		}
 		else if (hits > 2) {
-			//trimTeamMoves() <- means all
+			//trimTeamMoves(team) <- means all
 		}
 
 		for (int i = 0; i < hits; i++) {
@@ -253,7 +252,7 @@ namespace rechess {
 		//sayMoves(checkmoves);
 
 		if (checkmoves.size() > 0) {
-			//trimTeamMoves(checkmoves);
+			//trimTeamMoves(team, checkmoves);
 		}
 
 		return incheck;
